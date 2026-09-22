@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY py_producer/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY Data ./Data
+COPY py_producer/ .
+CMD ["python","Producer.py"]

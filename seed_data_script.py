@@ -22,10 +22,13 @@ def insert_values_to_sql_tables(row,counter):
 
 BASE_DIR = Path(__file__).resolve().parent
 file_path = BASE_DIR / "Data" / "stations.csv"
-with open(file_path, "r") as f:
-    f.readline(1) # skipp the header/titles oh the file
-    for line in f:
-        insert_values_to_sql_tables(line,counter)
-        print(line)
+try:
+    with open(file_path, "r") as f:
+        f.readline(1) # skipp the header/titles oh the file
+        for line in f:
+            insert_values_to_sql_tables(line,counter)
+            print(line)
+except FileNotFoundError:
+    print(f"Error: file {file_path} was not found")
 
 
