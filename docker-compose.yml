@@ -1,0 +1,18 @@
+ services:
+  db:
+    image: mysql:8.4
+    container_name: sqlDb
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: stationDb
+    ports:
+     - "3306:3306"
+    volumes:
+      - type: bind
+        source: ./seed_tables.sql
+        target: /docker-entrypoint-initdb.d/seed_tables.sql
+  
+  python_seed_service:
+    build:
+      context: .
+      dockerfile: dockerfile
