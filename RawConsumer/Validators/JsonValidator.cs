@@ -11,7 +11,7 @@ public static class JsonValidator
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        NumberHandling = JsonNumberHandling.AllowReadingFromString
+        //NumberHandling = JsonNumberHandling.AllowReadingFromString
     };
     public static bool TryValidateJson<T>(string jsonString, out T result, out List<ValidationResult> validationResults)
         where T : class

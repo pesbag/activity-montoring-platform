@@ -44,7 +44,7 @@ def main():
                              )
             time.sleep(DELAY_TIME)
             producer.poll(0)
-        print("Flushing remaining messages...")
+        print("flushing remaining messages...")
         producer.flush()
         print("all messages delivered")
     except FileNotFoundError:

@@ -71,10 +71,13 @@ services:
       context: .
       dockerfile: Analystics_Service/dockerfile
     depends_on:
-      - broker
-      - py-producer
+      broker:
+        condition: service_healthy
     environment:
       - KAFKA_BOOTSTRAP_SERVERS= broker:29092
+      - WINDOW_SIZE= 20
+      - Z_THRESHOLD= 3.5
+      - CRITICAL_THRESHOLD= 4.5
 
 volumes:
   mongo_data:
