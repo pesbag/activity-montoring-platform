@@ -8,11 +8,11 @@ namespace RawConsumer.Validators;
 
 public static class JsonValidator
 {
-    //private static readonly JsonSerializerOptions SerializerOptions = new()
-    //{
-    //    PropertyNameCaseInsensitive = true,
-    //    NumberHandling = JsonNumberHandling.AllowReadingFromString
-    //};
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString
+    };
     public static bool TryValidateJson<T>(string jsonString, out T result, out List<ValidationResult> validationResults)
         where T : class
     {
@@ -21,11 +21,11 @@ public static class JsonValidator
 
         try
         {
-            result = JsonSerializer.Deserialize<T>(jsonString);//, SerializerOptions);
+            result = JsonSerializer.Deserialize<T>(jsonString, SerializerOptions);
 
             if (result == null)
             {
-                validationResults.Add(new ValidationResult("Payload deserialized to null."));
+                validationResults.Add(new ValidationResult("payload deserialized to null"));
                 return false;
             }
 
@@ -34,7 +34,7 @@ public static class JsonValidator
         }
         catch (JsonException ex)
         {
-            validationResults.Add(new ValidationResult($"Invalid JSON syntax: {ex.Message}"));
+            validationResults.Add(new ValidationResult($"invalid json syntax: {ex.Message}"));
             return false;
         }
     }

@@ -6,8 +6,7 @@ import pandas as pd
 from confluent_kafka import Producer
 import socket
 from pathlib import Path
-# conf = {'bootstrap.servers': 'localhost:9092',
-#         'client.id': socket.gethostname()}
+
 bootstrap_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 
 conf = {
