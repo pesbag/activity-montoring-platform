@@ -41,15 +41,21 @@ def raw_producer_loop(consumer,topics):
                     print(f"no more message recived.total messages: {counter}")
                     break
 
+            # if msg.error():
+            #     if msg.error().code() == KafkaError._PARTITION_EOF:
+            #         sys.stderr.write('%% %s %d reached end at offset %d\n' %
+            #                          (msg.topic(), msg.partition(), msg.offset()))
+            #         continue
+            #     elif msg.error().code() in (KafkaError.UNKNOWN_TOPIC_OR_PART, 3):
+            #         time.sleep(0.5)
+            #         continue
+            #     else:
+            #         raise KafkaException(msg.error())
             if msg.error():
                 if msg.error().code() == KafkaError._PARTITION_EOF:
                     sys.stderr.write('%% %s %d reached end at offset %d\n' %
                                      (msg.topic(), msg.partition(), msg.offset()))
-                    continue
-                elif msg.error().code() in (KafkaError.UNKNOWN_TOPIC_OR_PART, 3):
-                    time.sleep(0.5)
-                    continue
-                else:
+                elif msg.error():
                     raise KafkaException(msg.error())
             else:
                 counter+=1
@@ -83,7 +89,7 @@ def hande_measure(incoming_reading):
     source_id=incoming_reading["source_id"]
     if source_id not in station_states:
         station_states[source_id]=deque(maxlen=WINDOW_SIZE)
-    window= station_states[source_id]
+    window = station_states[source_id]
     if len(window)<WINDOW_SIZE:
         window.append(incoming_reading)
         return
@@ -99,17 +105,18 @@ def hande_measure(incoming_reading):
 
     z_score = (incoming_reading["value"] - mean) / std
 
-    if abs(z_score) >= Z_THRESHOLD:
+    if abs(z_score) >= CRITICAL_THRESHOLD:
+        incoming_reading["severity"] = "Critical"
+    elif abs(z_score) >= Z_THRESHOLD:
         incoming_reading["severity"]="Warning"
     elif abs(z_score) < Z_THRESHOLD:
         incoming_reading["severity"]="Normal"
-    else:
-        incoming_reading["severity"] = "Critical"
 
     incoming_reading["mean"]=mean
     incoming_reading["standard_deviation"] = std
     incoming_reading["z_score"] = z_score
     incoming_reading["detected_at"] = datetime.datetime.now()
+    incoming_reading["status"]="New"
 
     return  incoming_reading
 

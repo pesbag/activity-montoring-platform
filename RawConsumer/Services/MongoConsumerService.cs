@@ -51,7 +51,7 @@ public class MongoConsumerService: BackgroundService
                     catch (OperationCanceledException) { break; }
                     catch (ConsumeException ex)
                     {
-                        _logger.LogError(ex, "Kafka consumption error: {Reason}", ex.Error.Reason);
+                        _logger.LogError(ex, "kafka consumption error: {Reason}", ex.Error.Reason);
                         Console.WriteLine($"error: {ex.Error.Reason}");
                         continue;
                     }
@@ -63,7 +63,7 @@ public class MongoConsumerService: BackgroundService
                     {
                         bool isValid = JsonValidator.TryValidateJson<ActivityReadingDto>(rawJson, out var eventDto, out var errors);
 
-                        if (isValid && eventDto != null)
+                        if (isValid && eventDto is not null)
                         {
                             var document = new ActivityReadingDocument
                             {
@@ -74,22 +74,22 @@ public class MongoConsumerService: BackgroundService
                             };
 
                             await _collection.InsertOneAsync(document, cancellationToken: stoppingToken);
-                            _logger.LogDebug("saved event {EventId} to Mongo", document.EventId);
+                            _logger.LogDebug("saved event {eventId} to mongo", document.EventId);
                         }
                         else
                         {
-                            _logger.LogWarning("invalid message format: {Errors}", string.Join(", ", errors));
+                            _logger.LogWarning("invalid message format: {errors}", string.Join(", ", errors));
                         }
                         consumer.Commit(consumeResult);
                     }
                     catch (FormatException jsonEx)
                     {
-                        _logger.LogError(jsonEx, "error in json format: {Message}", jsonEx.Message);
+                        _logger.LogError(jsonEx, "error in json format: {message}", jsonEx.Message);
                         consumer.Commit(consumeResult);
                     }
                     catch (MongoException mongoEx)
                     {
-                        _logger.LogError(mongoEx, "error in saving to MongoDB: {Message}", mongoEx.Message);
+                        _logger.LogError(mongoEx, "error in saving to MongoDB: {message}", mongoEx.Message);
                     }
                 }
             }

@@ -22,6 +22,7 @@ def acked(err, msg):
         print("Message produced: %s" % (str(msg)))
 
 def main():
+    counter=0
     print("enter to main")
     BASE_DIR=Path(__file__).resolve().parent
     file_path = BASE_DIR / "Data" / "activity_readings.csv"
@@ -42,11 +43,12 @@ def main():
                              value=json.dumps(row).encode('utf-8'),
                              callback=acked
                              )
+            counter+=1
             time.sleep(DELAY_TIME)
             producer.poll(0)
         print("flushing remaining messages...")
         producer.flush()
-        print("all messages delivered")
+        print(f"all messages delivered: total messages: {counter}")
     except FileNotFoundError:
         print(f"error file {file_path} not found")
 
