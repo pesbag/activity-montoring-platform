@@ -4,6 +4,7 @@ import os
 import json
 import sys
 import socket
+import time
 from collections import deque
 from confluent_kafka import Producer
 import pandas as pd
@@ -44,7 +45,11 @@ def raw_producer_loop(consumer,topics):
                 if msg.error().code() == KafkaError._PARTITION_EOF:
                     sys.stderr.write('%% %s %d reached end at offset %d\n' %
                                      (msg.topic(), msg.partition(), msg.offset()))
-                elif msg.error():
+                    continue
+                elif msg.error().code() in (KafkaError.UNKNOWN_TOPIC_OR_PART, 3):
+                    time.sleep(0.5)
+                    continue
+                else:
                     raise KafkaException(msg.error())
             else:
                 counter+=1
